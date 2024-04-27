@@ -24,7 +24,7 @@ func TestLineRequest_PushMessageNotify(t *testing.T) {
 	t.Run("正常系", func(t *testing.T) {
 		discordState := discordgo.NewState()
 		discordState.User = &discordgo.User{
-			ID:	   "111",
+			ID:       "111",
 			Username: "test",
 		}
 		content, err := onMessageCreateFunc(
@@ -56,6 +56,6 @@ func TestLineRequest_PushMessageNotify(t *testing.T) {
 			},
 		)
 		assert.NoError(t, err)
-		assert.Equal(t, "", content)
+		assert.Equal(t, "t", content)
 	})
 }

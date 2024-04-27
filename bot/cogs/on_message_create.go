@@ -33,10 +33,11 @@ func onMessageCreateFunc(
 	}
 
 	// メッセージが自分の発言でない場合は、メッセージを返信
-	message, err := s.ChannelMessageSend(vs.ChannelID, "Hello, World!")
+	message, err := s.ChannelMessageSend(vs.ChannelID, "Hello, World!", discordgo.WithClient(client))
 	if err != nil {
 		return "", err
 	}
+	slog.InfoContext(ctx, "Message sent", "Message:", message.Content)
 
 	return message.Content, nil
 }
