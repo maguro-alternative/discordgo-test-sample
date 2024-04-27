@@ -37,11 +37,14 @@ func TestLineRequest_PushMessageNotify(t *testing.T) {
 					}, nil
 				},
 				ChannelMessageSendFunc: func(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error) {
-					return &discordgo.Message{}, nil
+					return &discordgo.Message{
+						ID:      channelID,
+						Content: content,
+					}, nil
 				},
 				GuildFunc: func(guildID string, options ...discordgo.RequestOption) (st *discordgo.Guild, err error) {
 					return &discordgo.Guild{
-						ID: "123",
+						ID: guildID,
 					}, nil
 				},
 			},
@@ -56,6 +59,6 @@ func TestLineRequest_PushMessageNotify(t *testing.T) {
 			},
 		)
 		assert.NoError(t, err)
-		assert.Equal(t, "t", content)
+		assert.Equal(t, "Hello, World!", content)
 	})
 }

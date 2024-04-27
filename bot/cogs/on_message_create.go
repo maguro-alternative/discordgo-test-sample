@@ -37,7 +37,7 @@ func onMessageCreateFunc(
 	if err != nil {
 		return "", err
 	}
-	slog.InfoContext(ctx, "Message sent", "Message:", message.Content)
+	slog.InfoContext(ctx, "Message sent", "Message:", message.ID, "Content:", message.Content)
 
 	return message.Content, nil
 }
