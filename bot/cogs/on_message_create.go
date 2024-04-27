@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	//"maguro-alternative/discordgo-test-sample/bot/config"
 	"maguro-alternative/discordgo-test-sample/testutil/mock"
 
 	"github.com/bwmarrin/discordgo"
@@ -26,18 +25,18 @@ func onMessageCreateFunc(
 	s mock.Session,
 	state *discordgo.State,
 	vs *discordgo.MessageCreate,
-) (string, error) {
+) (*discordgo.Message, error) {
 	// メッセージが自分の発言かどうかを判定
 	if vs.Author.ID == state.User.ID {
-		return "", nil
+		return nil, nil
 	}
 
 	// メッセージが自分の発言でない場合は、メッセージを返信
 	message, err := s.ChannelMessageSend(vs.ChannelID, "Hello, World!", discordgo.WithClient(client))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	slog.InfoContext(ctx, "Message sent", "Message:", message.ID, "Content:", message.Content)
 
-	return message.Content, nil
+	return message, nil
 }
