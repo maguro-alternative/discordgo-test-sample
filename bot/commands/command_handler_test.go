@@ -24,7 +24,7 @@ func Test_PingCommandRegister(t *testing.T) {
 			ID: "1234567890",
 		}
 		h := newCommandHandler(&session, state, "")
-		err := h.commandRegister(PingCommand())
+		err := h.commandRegister(pingCommand())
 		assert.NoError(t, err)
 		c := h.getCommands()
 		assert.NotNil(t, c)
@@ -38,14 +38,14 @@ func Test_PingCommandRegister(t *testing.T) {
 			ID: "1234567890",
 		}
 		h := newCommandHandler(&session, state, "")
-		err := h.commandRegister(PingCommand())
+		err := h.commandRegister(pingCommand())
 		assert.NoError(t, err)
 		c := h.getCommands()
 		assert.NotNil(t, c)
 		assert.Equal(t, 1, len(c))
 		assert.Equal(t, "ping", c[0].Name)
 
-		err = h.commandRegister(PingCommand())
+		err = h.commandRegister(pingCommand())
 		assert.Error(t, err)
 	})
 
@@ -63,7 +63,7 @@ func Test_PingCommandRegister(t *testing.T) {
 			ID: "1234567890",
 		}
 		h := newCommandHandler(&session, state, "")
-		err := h.commandRegister(PingCommand())
+		err := h.commandRegister(pingCommand())
 		assert.Error(t, err)
 	})
 }
@@ -83,7 +83,7 @@ func Test_PingCommandRemove(t *testing.T) {
 			ID: "1234567890",
 		}
 		h := newCommandHandler(&session, state, "")
-		err := h.commandRegister(PingCommand())
+		err := h.commandRegister(pingCommand())
 		assert.NoError(t, err)
 		c := h.getCommands()
 		assert.NotNil(t, c)
@@ -124,7 +124,7 @@ func Test_PingCommandRemove(t *testing.T) {
 			ID: "1234567890",
 		}
 		h := newCommandHandler(&session, state, "")
-		err := h.commandRegister(PingCommand())
+		err := h.commandRegister(pingCommand())
 		assert.NoError(t, err)
 		c := h.getCommands()
 		assert.NotNil(t, c)

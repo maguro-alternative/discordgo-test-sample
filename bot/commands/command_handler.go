@@ -9,7 +9,7 @@ import (
 )
 
 // スラッシュコマンド内でもデータベースを使用できるようにする
-type commandHandler struct {}
+type commandHandler struct{}
 
 func newCogHandler() *commandHandler {
 	return &commandHandler{}
@@ -122,7 +122,7 @@ func RegisterCommands(discordSession *discordgo.Session) (func(), error) {
 	// NewCommandHandlerの第二引数を空にすることで、グローバルでの使用を許可する
 	commandHandler := newCommandHandler(discordSession, discordSession.State, "")
 	// 追加したいコマンドをここに追加
-	err := commandHandler.commandRegister(PingCommand())
+	err := commandHandler.commandRegister(pingCommand())
 	if err != nil {
 		fmt.Printf("error while registering command: %v\n", err)
 		return nil, err

@@ -8,7 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func PingCommand() *command {
+func pingCommand() *command {
 	/*
 		pingコマンドの定義
 
