@@ -20,33 +20,45 @@ func pingCommand() *command {
 	return &command{
 		Name:        "ping",
 		Description: "Pong!",
-		Options:     []*discordgo.ApplicationCommandOption{},
+		Options:     []*discordgo.ApplicationCommandOption{
+			{
+				Type:        discordgo.ApplicationCommandOptionSubCommand,
+				Name:        "response",
+				Description: "レスポンスのテキストを変更します。",
+			},
+		},
 		Executor:    exec.handlePing,
 	}
 }
 
-func (h *commandHandler) handlePing(s mock.Session, i *discordgo.InteractionCreate) error {
+func (h *commandHandler) handlePing(s mock.Session, i *discordgo.InteractionCreate) (*discordgo.InteractionResponse, error) {
 	/*
 		pingコマンドの実行
 
 		コマンドの実行結果を返す
 	*/
 	if i.Interaction.Data.(discordgo.ApplicationCommandInteractionData).Name != "ping" {
-		return nil
+		return nil, nil
 	}
 	if i.Interaction.GuildID != i.GuildID {
-		return nil
+		return nil, nil
 	}
-	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+	responseMessage := "Pong"
+	options := i.ApplicationCommandData().Options
+	if len(options) != 0 && options[0].Name == "response" {
+		responseMessage = options[0].StringValue()
+	}
+
+	commandResponse := &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: "Pong",
+			Content: responseMessage,
 		},
-	})
-	fmt.Println("Pong")
+	}
+	err := s.InteractionRespond(i.Interaction, commandResponse)
 	if err != nil {
 		fmt.Printf("error responding to ping command: %v\n", err)
-		return err
+		return nil, err
 	}
-	return nil
+	return commandResponse, nil
 }

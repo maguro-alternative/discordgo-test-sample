@@ -23,11 +23,14 @@ func Test_pingCommand(t *testing.T) {
 			},
 		},
 	}
+	interaction.Type = discordgo.InteractionApplicationCommand
 	interaction.GuildID = "1234567890"
 	t.Run("ping成功", func(t *testing.T) {
 		interaction.Interaction.GuildID = "1234567890"
-		err := pingCommand().Executor(&session, interaction)
+		commandResponse, err := pingCommand().Executor(&session, interaction)
 		assert.NoError(t, err)
+		assert.NotNil(t, commandResponse)
+		assert.Equal(t, "Pong", commandResponse.Data.Content)
 	})
 
 	t.Run("ping失敗", func(t *testing.T) {
@@ -37,7 +40,31 @@ func Test_pingCommand(t *testing.T) {
 				return errors.New("error")
 			},
 		}
-		err := pingCommand().Executor(&session, interaction)
+		commandResponse, err := pingCommand().Executor(&session, interaction)
 		assert.Error(t, err)
+		assert.Nil(t, commandResponse)
+	})
+
+	t.Run("pingのオプション取得", func(t *testing.T) {
+		interaction := &discordgo.InteractionCreate{
+			Interaction: &discordgo.Interaction{
+				Data: discordgo.ApplicationCommandInteractionData{
+					Name: "ping",
+					Options: []*discordgo.ApplicationCommandInteractionDataOption{
+						{
+							Type:  discordgo.ApplicationCommandOptionString,
+							Name:  "response",
+							Value: "Pong!!!!",
+						},
+					},
+				},
+			},
+		}
+		interaction.Type = discordgo.InteractionApplicationCommand
+		interaction.Interaction.GuildID = "1234567890"
+		commandResponse, err := pingCommand().Executor(&session, interaction)
+		assert.NoError(t, err)
+		assert.NotNil(t, commandResponse)
+		assert.Equal(t, "Pong!!!!", commandResponse.Data.Content)
 	})
 }

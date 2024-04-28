@@ -21,7 +21,7 @@ type command struct {
 	Description string
 	Options     []*discordgo.ApplicationCommandOption
 	AppCommand  *discordgo.ApplicationCommand
-	Executor    func(s mock.Session, i *discordgo.InteractionCreate) error
+	Executor    func(s mock.Session, i *discordgo.InteractionCreate) (*discordgo.InteractionResponse, error)
 }
 
 func (c *command) addApplicationCommand(appCmd *discordgo.ApplicationCommand) {
