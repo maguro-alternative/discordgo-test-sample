@@ -2,6 +2,7 @@ package cogs
 
 import (
 	"context"
+	"strings"
 
 	"log/slog"
 	"net/http"
@@ -26,8 +27,22 @@ func onMessageCreateFunc(
 	state *discordgo.State,
 	vs *discordgo.MessageCreate,
 ) (*discordgo.Message, error) {
-	// メッセージが自分の発言かどうかを判定
-	if vs.Author.ID == state.User.ID {
+	// Botの発言は無視
+	if vs.Author.Bot {
+		return nil, nil
+	}
+
+	// メッセージが "ping" の場合は、"pong" と返信
+	if vs.Message.Content == "ping" {
+		_, err := s.ChannelMessageSend(vs.ChannelID, "pong", discordgo.WithClient(client))
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	// !hello が含まれている場合は、何もしない
+	if strings.Contains(vs.Message.Content, "!hello") {
 		return nil, nil
 	}
 

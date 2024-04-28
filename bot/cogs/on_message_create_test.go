@@ -27,7 +27,7 @@ func TestLineRequest_PushMessageNotify(t *testing.T) {
 			ID:       "111",
 			Username: "test",
 		}
-		content, err := onMessageCreateFunc(
+		message, err := onMessageCreateFunc(
 			ctx,
 			stubClient,
 			&mock.SessionMock{
@@ -59,6 +59,6 @@ func TestLineRequest_PushMessageNotify(t *testing.T) {
 			},
 		)
 		assert.NoError(t, err)
-		assert.Equal(t, "Hello, World!", content)
+		assert.Equal(t, "Hello, World!", message.Content)
 	})
 }
