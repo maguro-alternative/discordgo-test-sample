@@ -91,6 +91,10 @@ func (h *handler) commandRegister(command *command) error {
 
 // スラッシュコマンドの削除
 func (h *handler) commandRemove(command *command) error {
+	// コマンドが登録されていない場合はエラーを返す
+	if command == nil {
+		return fmt.Errorf("command does not exist")
+	}
 	err := h.session.ApplicationCommandDelete(h.state.User.ID, h.guild, command.AppCommand.ID)
 	if err != nil {
 		return fmt.Errorf("error while deleting application command: %v", err)
