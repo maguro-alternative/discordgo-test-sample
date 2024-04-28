@@ -2,6 +2,7 @@ package cogs
 
 import (
 	"context"
+	"errors"
 	"io"
 	"maguro-alternative/discordgo-test-sample/testutil/mock"
 	"net/http"
@@ -31,20 +32,10 @@ func TestOnMessageCreate(t *testing.T) {
 			ctx,
 			stubClient,
 			&mock.SessionMock{
-				ChannelFunc: func(channelID string, options ...discordgo.RequestOption) (st *discordgo.Channel, err error) {
-					return &discordgo.Channel{
-						GuildID: "123",
-					}, nil
-				},
 				ChannelMessageSendFunc: func(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error) {
 					return &discordgo.Message{
 						ID:      channelID,
 						Content: content,
-					}, nil
-				},
-				GuildFunc: func(guildID string, options ...discordgo.RequestOption) (st *discordgo.Guild, err error) {
-					return &discordgo.Guild{
-						ID: guildID,
 					}, nil
 				},
 			},
@@ -72,20 +63,10 @@ func TestOnMessageCreate(t *testing.T) {
 			ctx,
 			stubClient,
 			&mock.SessionMock{
-				ChannelFunc: func(channelID string, options ...discordgo.RequestOption) (st *discordgo.Channel, err error) {
-					return &discordgo.Channel{
-						GuildID: "123",
-					}, nil
-				},
 				ChannelMessageSendFunc: func(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error) {
 					return &discordgo.Message{
 						ID:      channelID,
 						Content: content,
-					}, nil
-				},
-				GuildFunc: func(guildID string, options ...discordgo.RequestOption) (*discordgo.Guild, error) {
-					return &discordgo.Guild{
-						ID: guildID,
 					}, nil
 				},
 			},
@@ -103,5 +84,97 @@ func TestOnMessageCreate(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "pong", message.Content)
 	})
-}
 
+	t.Run("正常系(!helloを受け取った場合何もしない)", func(t *testing.T) {
+		discordState := discordgo.NewState()
+		discordState.User = &discordgo.User{
+			ID:       "111",
+			Username: "test",
+		}
+		message, err := onMessageCreateFunc(
+			ctx,
+			stubClient,
+			&mock.SessionMock{
+				ChannelMessageSendFunc: func(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error) {
+					return &discordgo.Message{
+						ID:      channelID,
+						Content: content,
+					}, nil
+				},
+			},
+			discordState,
+			&discordgo.MessageCreate{
+				Message: &discordgo.Message{
+					Author: &discordgo.User{
+						Bot: false,
+					},
+					Content: "work !hello",
+				},
+			},
+		)
+
+		assert.NoError(t, err)
+		assert.Nil(t, message)
+	})
+
+	t.Run("正常系(自分の発言の場合何もしない)", func(t *testing.T) {
+		discordState := discordgo.NewState()
+		discordState.User = &discordgo.User{
+			ID:       "111",
+			Username: "testbot",
+		}
+		message, err := onMessageCreateFunc(
+			ctx,
+			stubClient,
+			&mock.SessionMock{
+				ChannelMessageSendFunc: func(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error) {
+					return &discordgo.Message{
+						ID:      channelID,
+						Content: content,
+					}, nil
+				},
+			},
+			discordState,
+			&discordgo.MessageCreate{
+				Message: &discordgo.Message{
+					Author: &discordgo.User{
+						Bot: true,
+					},
+					Content: "test",
+				},
+			},
+		)
+
+		assert.NoError(t, err)
+		assert.Nil(t, message)
+	})
+
+	t.Run("異常系(メッセージ送信に失敗)", func(t *testing.T) {
+		discordState := discordgo.NewState()
+		discordState.User = &discordgo.User{
+			ID:       "111",
+			Username: "test",
+		}
+		message, err := onMessageCreateFunc(
+			ctx,
+			stubClient,
+			&mock.SessionMock{
+				ChannelMessageSendFunc: func(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error) {
+					return nil, errors.New("test error")
+				},
+			},
+			discordState,
+			&discordgo.MessageCreate{
+				Message: &discordgo.Message{
+					Author: &discordgo.User{
+						Bot: false,
+					},
+					Content: "test",
+				},
+			},
+		)
+
+		assert.Error(t, err)
+		assert.Nil(t, message)
+	})
+}
