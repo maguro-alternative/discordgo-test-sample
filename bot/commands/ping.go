@@ -43,6 +43,7 @@ func (h *commandHandler) handlePing(s mock.Session, i *discordgo.InteractionCrea
 			Content: "Pong",
 		},
 	})
+	fmt.Println("Pong")
 	if err != nil {
 		fmt.Printf("error responding to ping command: %v\n", err)
 		return err
