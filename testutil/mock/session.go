@@ -68,7 +68,7 @@ func (s *SessionMock) GuildRoles(guildID string, options ...discordgo.RequestOpt
 }
 
 func (s *SessionMock) InteractionRespond(interaction *discordgo.Interaction, resp *discordgo.InteractionResponse, options ...discordgo.RequestOption) error {
-	return nil
+	return s.InteractionRespondFunc(interaction, resp, options...)
 }
 
 func (s *SessionMock) UserChannelPermissions(userID string, channelID string, fetchOptions ...discordgo.RequestOption) (apermissions int64, err error) {
