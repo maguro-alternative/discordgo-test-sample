@@ -15,9 +15,9 @@ func BotOnReady(client *http.Client) (*discordgo.Session, func(), error) {
 	/*
 		ボットの起動
 
-		args:
-		indexDB: db.Driver
-		データベースのドライバー
+		引数:
+		*http.Client
+		HTTPクライアント
 
 		return:
 		*discordgo.Session
