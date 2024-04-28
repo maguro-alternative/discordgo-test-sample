@@ -34,11 +34,11 @@ func onMessageCreateFunc(
 
 	// メッセージが "ping" の場合は、"pong" と返信
 	if vs.Message.Content == "ping" {
-		_, err := s.ChannelMessageSend(vs.ChannelID, "pong", discordgo.WithClient(client))
+		message, err := s.ChannelMessageSend(vs.ChannelID, "pong", discordgo.WithClient(client))
 		if err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return message, nil
 	}
 
 	// !hello が含まれている場合は、何もしない
