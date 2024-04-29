@@ -33,6 +33,22 @@ func Test_pingCommand(t *testing.T) {
 		assert.Equal(t, "Pong", commandResponse.Data.Content)
 	})
 
+	t.Run("ping以外のスラッシュコマンドの場合終了", func(t *testing.T) {
+		interaction := &discordgo.InteractionCreate{
+			Interaction: &discordgo.Interaction{
+				Data: discordgo.ApplicationCommandInteractionData{
+					Name: "pong",
+				},
+			},
+		}
+		interaction.Type = discordgo.InteractionApplicationCommand
+		interaction.Interaction.GuildID = "1234567890"
+		session := mock.SessionMock{}
+		commandResponse, err := pingCommand().Executor(&session, interaction)
+		assert.NoError(t, err)
+		assert.Nil(t, commandResponse)
+	})
+
 	t.Run("ping失敗", func(t *testing.T) {
 		interaction.Interaction.GuildID = "1234567890"
 		session := mock.SessionMock{
