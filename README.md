@@ -1,6 +1,17 @@
 # discordgoのe2eテストサンプル
 discordgoのe2eテストのサンプルです。
 
+# 準備
+```.env```ファイルを作成し、以下の内容を記述してください。
+```
+DISCORD_BOT_TOKEN=DiscordのBotのトークン
+```
+
+Botの起動は以下のコマンドで行います。
+```
+go run core/main.go
+```
+
 # 共通事項
 ## 引数と戻り値
 discordgoではAddHandler関数を使ってイベント処理を登録します。  
