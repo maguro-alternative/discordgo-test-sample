@@ -20,14 +20,15 @@ func pingCommand() *command {
 	return &command{
 		Name:        "ping",
 		Description: "Pong!",
-		Options:     []*discordgo.ApplicationCommandOption{
+		Options: []*discordgo.ApplicationCommandOption{
 			{
+				Required:    false,
 				Type:        discordgo.ApplicationCommandOptionSubCommand,
 				Name:        "response",
 				Description: "レスポンスのテキストを変更します。",
 			},
 		},
-		Executor:    exec.handlePing,
+		Executor: exec.handlePing,
 	}
 }
 
