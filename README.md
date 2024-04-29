@@ -147,5 +147,19 @@ func TestOnMessageCreateFunc(t *testing.T) {
 - メッセージの送信に失敗した場合
 
 # スラッシュコマンドのテスト
+スラッシュコマンドは登録のテストも行います。  
+以下の構造体に、コマンドの情報を保持できるかテストします。
+```go
+type handler struct {
+	session  mock.Session
+	state    *discordgo.State
+	commands map[string]*command
+	guild    string
+}
+```
+
+```commandRegister```関数でコマンドを登録し、```handler.commands```に格納します。  
+```commandRemove```関数でコマンドを削除し、```handler.commands```内のデータも削除します。  
+```getCommand```関数で```handler.commands```からコマンドを取得します。
 
 
