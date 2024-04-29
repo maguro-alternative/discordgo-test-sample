@@ -160,6 +160,75 @@ type handler struct {
 
 ```commandRegister```関数でコマンドを登録し、```handler.commands```に格納します。  
 ```commandRemove```関数でコマンドを削除し、```handler.commands```内のデータも削除します。  
-```getCommand```関数で```handler.commands```からコマンドを取得します。
+```getCommand```関数で```handler.commands```からコマンドを取得します。  
 
+各スラッシュコマンドは以下のように定義します。
+```go
+func pingCommand() *command {
+	/*
+		pingコマンドの定義
 
+		コマンド名: ping
+		説明: Pong!
+		オプション: なし
+	*/
+	exec := newCogHandler()
+	return &command{
+		Name:        "ping",
+		Description: "Pong!",
+		Options:     []*discordgo.ApplicationCommandOption{
+			{
+                Required:    false,
+				Type:        discordgo.ApplicationCommandOptionSubCommand,
+				Name:        "response",
+				Description: "レスポンスのテキストを変更します。",
+			},
+		},
+		Executor:    exec.handlePing,
+	}
+}
+
+func (h *commandHandler) handlePing(s mock.Session, i *discordgo.InteractionCreate) (*discordgo.InteractionResponse, error) {}
+```
+
+Optionはスラッシュコマンドのオプション(discord.go公式のサンプルコード参照)、Executorは実行する関数を指定します。  
+
+スラッシュコマンドの関数は以下のような引数と戻り値の指定があります。
+```go
+func(s mock.Session, i *discordgo.InteractionCreate) (*discordgo.InteractionResponse, error)
+```
+
+コマンドに対する返信の内容とエラーを返します。  
+
+テストは以下のように行います。
+```go
+session := mock.SessionMock{
+		InteractionRespondFunc: func(i *discordgo.Interaction, r *discordgo.InteractionResponse, options ...discordgo.RequestOption) error {
+			return nil
+		},
+	}
+	interaction := &discordgo.InteractionCreate{
+		Interaction: &discordgo.Interaction{
+			Data: discordgo.ApplicationCommandInteractionData{
+				Name: "ping",
+			},
+		},
+	}
+	interaction.Type = discordgo.InteractionApplicationCommand
+	interaction.GuildID = "1234567890"
+	t.Run("ping成功", func(t *testing.T) {
+		interaction.Interaction.GuildID = "1234567890"
+		commandResponse, err := pingCommand().Executor(&session, interaction)
+		assert.NoError(t, err)
+		assert.NotNil(t, commandResponse)
+		assert.Equal(t, "Pong", commandResponse.Data.Content)
+	})
+```
+
+```cog```と同様に```&mock.SessionMock```を引数に渡すことで、モックを使用してテストを行います。  
+その他、以下のようなテストも行っています。
+- 別のコマンドが実行された場合
+- コマンドの返信に失敗した場合
+- オプションが指定された場合
+
+必要に応じてテストを追加した下さい。
