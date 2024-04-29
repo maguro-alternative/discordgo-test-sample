@@ -65,6 +65,9 @@ func Test_PingCommandRegister(t *testing.T) {
 		h := newCommandHandler(&session, state, "")
 		err := h.commandRegister(pingCommand())
 		assert.Error(t, err)
+
+		c := h.getCommands()
+		assert.Len(t, c, 0)
 	})
 }
 
